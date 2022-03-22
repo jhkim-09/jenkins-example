@@ -1,0 +1,20 @@
+---
+- name: Docker Deploy
+  hosts: docker_host
+  tasks:
+    - name: clean up
+      block:
+        - name: container stop
+          command: docker stop java-hello-world
+        - name: container remove
+          command: docker rm java-hello-world
+        - name: image remove
+          command: docker image rm java-hello-world
+      ignore_errors: true
+    - name: Docker image build
+      command: docker image build -t java-hello-world .
+      args:
+        chdir: /home/vagrant/hello-world
+
+    - name: Docker container create
+      command: docker run -d -p 8080:8080 --name java-hello-world java-hello-world
